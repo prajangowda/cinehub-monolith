@@ -27,7 +27,7 @@ public class JWTservice {
         return Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String Gettoken(CustomUserDetails userPrincipal)
+    public String generateAccessToken(CustomUserDetails userPrincipal)
     {
         String role = userPrincipal.getRole() != null
                 ? userPrincipal.getRole().name()
@@ -44,7 +44,7 @@ public class JWTservice {
 
     }
 
-    public String getemailfromtoken(String token) {
+    public String getEmailFromToken(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(key())
                 .build()

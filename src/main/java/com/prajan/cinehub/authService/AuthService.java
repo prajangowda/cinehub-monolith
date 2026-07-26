@@ -48,38 +48,29 @@ public class AuthService {
     public LoginResponse login(LoginRequest LoginDto)
     {
 
-
-
-            Authentication authentication = authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             LoginDto.getEmail(),
                             LoginDto.getPassword()
                     )
             );
 
+        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
 
-
-            UserIn user =userInRepository.findByEmail(LoginDto.getEmail()).orElse(null);
-
-        if (!user.isActive()) {
+        if (!userPrincipal.isEnabled()) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Account disabled by admin"
             );
         }
 
-            CustomUserDetails userPrincipal =
-                    (CustomUserDetails) authentication.getPrincipal();
 
-            String token = jwtservice.Gettoken(userPrincipal);
+        String accessToken = jwtservice.generateAccessToken(userPrincipal);
 
+//        String refreshToken =
+//                jwtService.generateRefreshToken(user);
 
-            Role role = userPrincipal.getRole();
-            if(role==null) role=Role.USER;
-
-
-            return new LoginResponse(token, role );
-
+        return new LoginResponse(accessToken);
 
     }
 
