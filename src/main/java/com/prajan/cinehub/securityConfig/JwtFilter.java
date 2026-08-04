@@ -1,10 +1,11 @@
 package com.prajan.cinehub.securityConfig;
 
-import com.prajan.cinehub.authService.CookieService;
-import com.prajan.cinehub.authService.JWTservice;
-import com.prajan.cinehub.model.CustomUserDetails;
-import com.prajan.cinehub.model.UserIn;
-import com.prajan.cinehub.repository.UserInRepository;
+import com.prajan.cinehub.auth.authService.CookieService;
+import com.prajan.cinehub.auth.authService.JWTservice;
+import com.prajan.cinehub.auth.model.CustomUserDetails;
+import com.prajan.cinehub.auth.model.UserIn;
+import com.prajan.cinehub.auth.repository.UserInRepository;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
 
-            String token = cookieService.extractTokenFromCookies(request);
+            String token = cookieService.extractTokenFromCookies(request,"accessToken");
 
             if (token == null) {
                 filterChain.doFilter(request, response);
@@ -48,7 +50,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserIn user = repo.findByEmail(email).orElse(null);
+                UserIn user = repo.findByEmail(email)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
                 if (!user.isActive())
                     throw new ResponseStatusException(
@@ -62,11 +65,15 @@ public class JwtFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
+
+
             }
             filterChain.doFilter(request, response);
-        }catch(Exception ex)
-        {
-           handlerExceptionResolver.resolveException(request,response,null,ex);
+        }catch (JwtException | UsernameNotFoundException ex) {
+            SecurityContextHolder.clearContext();
+            handlerExceptionResolver.resolveException(request, response, null, ex);
+            return;
         }
     }
 }
