@@ -2,5 +2,6 @@ package com.prajan.cinehub.auth.enums;
 
 public enum Role {
     ADMIN,
-    USER
+    USER,
+    THEATRE_OWNER
 }

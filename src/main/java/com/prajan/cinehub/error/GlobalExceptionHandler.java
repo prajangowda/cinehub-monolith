@@ -103,4 +103,34 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleResourceNotFound(
+            ResourceNotFoundException ex
+    ) {
+
+        ApiError error = new ApiError(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Resource Not Found",
+                ex.getMessage()
+        );
+
+        return new ResponseEntity<>(
+                error,
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleResourceAlreadyExists(
+            ResourceAlreadyExistsException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiError(
+                        LocalDateTime.now(),
+                        HttpStatus.CONFLICT.value(),
+                        "Resource Already Exists",
+                        ex.getMessage()
+                ));
+    }
 }

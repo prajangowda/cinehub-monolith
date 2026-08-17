@@ -11,10 +11,15 @@ import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
 
+
     private UserIn user;
 
     public CustomUserDetails(UserIn user) {
         this.user = user;
+    }
+
+    public Long getId() {
+        return user.getId();
     }
 
     @Override

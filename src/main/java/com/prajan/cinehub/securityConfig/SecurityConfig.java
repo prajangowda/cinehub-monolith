@@ -37,8 +37,9 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/auth/**", "/oauth2/**","/public/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/Theatre_owner/**").hasRole("THEATRE_OWNER")
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> {})

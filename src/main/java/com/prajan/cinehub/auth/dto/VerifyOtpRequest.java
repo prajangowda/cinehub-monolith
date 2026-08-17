@@ -2,23 +2,16 @@ package com.prajan.cinehub.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-public class SingupRequest {
-
-    @NotBlank
-    private String name;
+public class VerifyOtpRequest {
 
     @Email
     private String email;
 
-    @Size(min = 8)
-    private String password;
-
+    @NotBlank
+    private String otp;
 }
