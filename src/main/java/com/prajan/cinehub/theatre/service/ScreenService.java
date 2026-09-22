@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 
 
 @Service
@@ -52,4 +53,15 @@ public class ScreenService {
         return ScreenMapper.toResponse(savedScreen);
     }
 
+    public List<ScreenResponse> getScreensByTheatre(Long theatreId) {
+
+        if (!theatreRepository.existsById(theatreId)) {
+            throw new ResourceNotFoundException("Theatre not found");
+        }
+
+        return screenRepository.findByTheatreId(theatreId)
+                .stream()
+                .map(ScreenMapper::toResponse)
+                .toList();
+    }
 }

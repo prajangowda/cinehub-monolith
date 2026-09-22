@@ -6,10 +6,9 @@ import com.prajan.cinehub.theatre.service.ScreenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/screens")
@@ -27,5 +26,15 @@ public class ScreenController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+
+    @GetMapping("/theatre/{theatreId}")
+    public ResponseEntity<List<ScreenResponse>> getScreensByTheatre(
+            @PathVariable Long theatreId) {
+
+        return ResponseEntity.ok(
+                screenService.getScreensByTheatre(theatreId)
+        );
     }
 }

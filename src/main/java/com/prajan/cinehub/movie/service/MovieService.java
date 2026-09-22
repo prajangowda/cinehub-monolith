@@ -1,6 +1,7 @@
 package com.prajan.cinehub.movie.service;
 
 import com.prajan.cinehub.movie.dto.CreateMovieRequest;
+import com.prajan.cinehub.movie.dto.MoviePageResponse;
 import com.prajan.cinehub.movie.dto.MovieResponse;
 import com.prajan.cinehub.movie.dto.UpdateMovieRequest;
 import com.prajan.cinehub.movie.entity.Movie;
@@ -13,7 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -63,7 +65,18 @@ public class MovieService {
 
     @Transactional
     public void deleteMovie(Long movieId) {
-        // TODO: Implement soft delete
+
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Movie not found with id: " + movieId
+                        )
+                );
+
+        movieRepository.delete(movie);
+
+        log.info("Movie permanently deleted successfully. Movie ID: {}", movieId);
     }
 
 
@@ -79,6 +92,8 @@ public class MovieService {
     }
 
 
+
+
     public List<MovieResponse> getAllMovies() {
 
         return movieRepository.findAll()
@@ -87,6 +102,25 @@ public class MovieService {
                 .toList();
     }
 
+    public MoviePageResponse getMovies(Pageable pageable) {
+
+        Page<Movie> moviePage = movieRepository.findAll(pageable);
+
+        List<MovieResponse> movies = moviePage.getContent()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+
+        return MoviePageResponse.builder()
+                .content(movies)
+                .page(moviePage.getNumber())
+                .size(moviePage.getSize())
+                .totalElements(moviePage.getTotalElements())
+                .totalPages(moviePage.getTotalPages())
+                .first(moviePage.isFirst())
+                .last(moviePage.isLast())
+                .build();
+    }
     private MovieResponse mapToResponse(Movie movie) {
         return MovieResponse.builder()
                 .id(movie.getId())

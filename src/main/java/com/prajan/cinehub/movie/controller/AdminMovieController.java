@@ -39,6 +39,7 @@ public class AdminMovieController {
     @DeleteMapping("/{movieId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(@PathVariable Long movieId) {
+
         movieService.deleteMovie(movieId);
     }
 }

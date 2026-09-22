@@ -1,5 +1,6 @@
 package com.prajan.cinehub.theatre.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.prajan.cinehub.theatre.enums.ScreenType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +33,7 @@ public class Screen {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theatre_id")
+    @JsonIgnore
     private Theatre theatre;
 
     @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL)
