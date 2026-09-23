@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api/v1")
 public class ShowController {
 
     private final ShowService showService;

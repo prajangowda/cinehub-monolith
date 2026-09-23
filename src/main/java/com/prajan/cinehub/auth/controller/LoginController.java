@@ -10,13 +10,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class LoginController {
 
 
@@ -28,12 +30,14 @@ public class LoginController {
 
     @GetMapping("/me")
     public ResponseEntity<UserResponse> me(Authentication authentication) {
+        log.info(" getting me ");
         return ResponseEntity.ok(authService.getCurrentUser(authentication));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest dto, HttpServletResponse response) {
 
+        log.info("request for login");
         LoginResponse result= authService.login(dto);
 
         cookieService.addAccessTokenCookie(response, result.getAccessToken());
@@ -48,6 +52,7 @@ public class LoginController {
     public ResponseEntity<SignupResponse> signup(
             @Valid @RequestBody SingupRequest request) {
 
+        log.info("request for Sign up");
         return ResponseEntity.ok(authService.signup(request));
     }
 
@@ -78,6 +83,7 @@ public class LoginController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+        log.info("Requesting for access token from refresh token");
         LoginResponse result=authService.refreshToken(request, response);
         cookieService.addAccessTokenCookie(response, result.getAccessToken());
         return ResponseEntity.ok("access token issed");

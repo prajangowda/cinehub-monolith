@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Slf4j
-@RequestMapping("/admin/movies")
+@RequestMapping("/api/v1/admin/movies")
 @RequiredArgsConstructor
 public class AdminMovieController {
 
